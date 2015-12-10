@@ -108,7 +108,7 @@ public class PlaneLauncher extends JFrame {
         private Vector3f farCol = new Vector3f(0.2, 0.2, 0.2);
         private int up = move - pos;
 
-        private void init() throws FileNotFoundException {
+        private void init() throws IOException {
             for (int c = 0; c < 3; c++) {
                 near[c] = new Mountain((float) (c - 0.75));
                 far[c] = new Mountain((float) (c - 0.5));
@@ -244,7 +244,7 @@ public class PlaneLauncher extends JFrame {
                 glMatrixMode(GL_MODELVIEW);
 
                 glPushMatrix();
-                glTranslated(1.252 - count * 0.004 + lineCount * 1.252, 0.2, -1);
+                glTranslated(1.252 - count * 0.004 + lineCount * 1.252, 0.2, -0.8);
                 drawCloudLine(cf);
                 glPushMatrix();
                 glTranslated(-1.252, 0, 0);
@@ -272,7 +272,7 @@ public class PlaneLauncher extends JFrame {
                     manoeuvre(up);
                     up = move - pos;
                 }
-                glRotated(4 * Math.sin(count * 0.02), 1, 0, 0);
+                glRotated((4 * Math.sin(count * 0.02) - 30 ), 1, 0, 0);
                 glRotated(4 * Math.sin((count + 19) * 0.02), 0, 1, 0);
                 glRotated(4 * Math.sin(((count) * 0.02) + Math.PI / 2), 0, 0, 1);
                 glTranslated(0, 0.07 * Math.sin((count) * 0.02), 0);
@@ -294,21 +294,22 @@ public class PlaneLauncher extends JFrame {
                 phase = 0;
             } else {
                 movement.add(new Vector3f(0, 0.5 * up / 90, 0));
-                //glRotated(phase * 4, 1, 0, 0);
                 if (phase < 45) {
                     glRotated(phase * up, 0, 0, 1);
                 } else {
                     glRotated((-phase + 90) * up, 0, 0, 1);
                 }
+                glRotated(phase * 4, up, 0, 0);
                 phase++;
             }
         }
 
         private static ArrayList<Triangle> cloudTriang;
 
-        private static ArrayList<Triangle> planeGenerator() throws FileNotFoundException {
+        private static ArrayList<Triangle> planeGenerator() throws IOException {
             ArrayList<Triangle> res = new ArrayList<>();
-            for (Obj t : Reader.pointReader("abstractPlane")) {
+            Reader pl = new Reader("plane");
+            for (Obj t : pl.pointReader()) {
                 res.addAll(t.triangulate());
             }
             return res;
@@ -326,9 +327,10 @@ public class PlaneLauncher extends JFrame {
             }
         }
 
-        private static ArrayList<Triangle> cloudGenerator() throws FileNotFoundException {
+        private static ArrayList<Triangle> cloudGenerator() throws IOException {
             ArrayList<Triangle> res = new ArrayList<>();
-            for (Obj t : Reader.pointReader("abstractCloud")) {
+            Reader clf = new Reader("cloud");
+            for (Obj t : clf.pointReader()) {
                 res.addAll(t.triangulate());
             }
             return res;

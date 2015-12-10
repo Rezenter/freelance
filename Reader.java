@@ -1,27 +1,37 @@
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 /**
  * Created by Rezenter on 12/1/15.
  */
 public class Reader {
-    //final static String PATH = "./";
-    final static String PATH = "./objects/";
+    final static String PATH = "/objects/";
+    static String name;
+    static ArrayList<Vector3f> res;
+    static ArrayList<Vector3f> cons;
+    static String colour;
+    static String file;
+    static ArrayList<Obj> objects;
+    static int count;
+    static int num;
+    static int currNum;
 
-    public static ArrayList<Obj> pointReader(String filename) throws FileNotFoundException {
-        Scanner in = new Scanner(new File(PATH + filename + ".obj"));
-        ArrayList<Vector3f> res = new ArrayList<Vector3f>();
-        ArrayList<Vector3f> cons = new ArrayList<Vector3f>();
-        String colour = "";
-        String file = "";
-        ArrayList<Obj> objects = new ArrayList<>();
-        int count = -1;
-        int num = 0;
-        int currNum = 0;
-        while (in.hasNextLine()) {
-            String curr = in.nextLine();
+    public Reader(String nnn) throws IOException {
+        res = new ArrayList<Vector3f>();
+        cons = new ArrayList<Vector3f>();
+        colour = "";
+        file = "";
+        count = -1;
+        num = 0;
+        currNum = 0;
+        objects = new ArrayList<>();
+        name = nnn;
+        BufferedReader in =
+            new BufferedReader(new InputStreamReader(getClass().getResourceAsStream(PATH + name +".obj")));
+        while (in.ready()) {
+            String curr = in.readLine();
             if (curr.length() > 1) {
                 if (curr.charAt(0) == 'v' && curr.charAt(1) == ' ') {
                     String[] split = curr.split(" ");
@@ -66,10 +76,10 @@ public class Reader {
         }
         objects.get(count).set(res, cons, colour);
         in.close();
-        in = new Scanner(new File(PATH + file));
+        in = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream(PATH + file)));
         String a = "";
-        while (in.hasNextLine()) {
-            String curr = in.nextLine();
+        while (in.ready()) {
+            String curr = in.readLine();
             if (curr.length() > 1) {
                 if (curr.charAt(0) == 'n' && curr.charAt(1) == 'e') {
                         String[] split = curr.split(" ");
@@ -88,6 +98,9 @@ public class Reader {
             }
         }
         in.close();
+    }
+
+    public static ArrayList<Obj> pointReader(){
         return objects;
     }
 }
